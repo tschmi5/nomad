@@ -189,7 +189,6 @@ func maybeTweakTags(wanted *api.AgentServiceRegistration, existing *api.AgentSer
 // (cached) state of the service registration reported by Consul. If any of the
 // critical fields are not deeply equal, they considered different.
 func different(wanted *api.AgentServiceRegistration, existing *api.AgentService, sidecar *api.AgentService) bool {
-
 	switch {
 	case wanted.Kind != existing.Kind:
 		return true
@@ -205,12 +204,12 @@ func different(wanted *api.AgentServiceRegistration, existing *api.AgentService,
 		return true
 	case !reflect.DeepEqual(wanted.Meta, existing.Meta):
 		return true
-	case !reflect.DeepEqual(wanted.Tags, existing.Tags):
+	case tagsDifferent(wanted.Tags, existing.Tags):
 		return true
 	case connectSidecarDifferent(wanted, sidecar):
+		fmt.Println("different.connectSidecarDifferent is TRUE!")
 		return true
 	}
-
 	return false
 }
 
@@ -228,17 +227,33 @@ func tagsDifferent(a, b []string) bool {
 	return false
 }
 
+// sidecarTagsDifferent includes the special logic for comparing sidecar tags
+// from Nomad vs. Consul perspective. Because Consul defaults the sidecar tags
+// to the parent service tags, we need to take that into consideration when Nomad's
+// sidecar tags are the empty set.
+func sidecarTagsDifferent(parent, wanted, sidecar []string) bool {
+
+}
+
 func connectSidecarDifferent(wanted *api.AgentServiceRegistration, sidecar *api.AgentService) bool {
+
 	if wanted.Connect != nil && wanted.Connect.SidecarService != nil {
+		fmt.Println("CSD, w:", wanted.Name, "sc:", sidecar.Service)
+
 		if sidecar == nil {
 			// consul lost our sidecar (?)
+			fmt.Println("A")
 			return true
 		}
 		if tagsDifferent(wanted.Connect.SidecarService.Tags, sidecar.Tags) {
 			// tags on the nomad definition have been modified
+
+			fmt.Println("B, w:", wanted.Connect.SidecarService.Tags, "st:", sidecar.Tags)
 			return true
 		}
 	}
+
+	fmt.Println("CSD false")
 
 	// There is no connect sidecar the nomad side; let consul anti-entropy worry
 	// about any registration on the consul side.
