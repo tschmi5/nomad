@@ -44,6 +44,7 @@ var (
 		"exec",
 		"qemu",
 		"java",
+		"python",
 	}, ",")
 
 	// A mapping of directories on the host OS to attempt to embed inside each

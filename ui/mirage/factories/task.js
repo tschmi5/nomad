@@ -2,7 +2,7 @@ import { Factory } from 'ember-cli-mirage';
 import faker from 'nomad-ui/mirage/faker';
 import { generateResources } from '../common';
 
-const DRIVERS = ['docker', 'java', 'rkt', 'qemu', 'exec', 'raw_exec'];
+const DRIVERS = ['docker', 'java', 'rkt', 'qemu', 'exec', 'raw_exec', 'python'];
 
 export default Factory.extend({
   createRecommendations: false,

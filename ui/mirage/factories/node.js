@@ -161,6 +161,7 @@ function makeDrivers() {
     exec: generate('exec'),
     raw_exec: generate('raw_exec'),
     java: generate('java'),
+    python: generate('python'),
   };
 }
 
